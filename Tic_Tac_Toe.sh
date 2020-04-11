@@ -19,13 +19,13 @@ choice=0
 player=""
 computer=""
 computerChoice=0
+choosePosition=0
+computerPosition=0
+turn=0
+
+declare -a flag
 
 declare -a board
-
-for (( position=1 ; position<=9 ; position++ ))
-do
-	board[$position]=$position
-done
 
 function printBoard() {
 	echo " ${board[$one]} | ${board[$two]} | ${board[$three]}"
@@ -34,7 +34,12 @@ function printBoard() {
    echo "-----------"
 	echo " ${board[$seven]} | ${board[$eight]} | ${board[$nine]}"
 }
-printBoard
+
+function turnFlag() {
+	board[$choosePosition]=$1
+   printBoard
+   flag[$choosePosition]=1
+}
 
 function playerChooseOption() {
 	read -p "Enter letter X or O:" choice
@@ -45,6 +50,9 @@ function playerChooseOption() {
 	else
 		computer="X"
 	fi
+	read -p "Enter the choice:" choosePosition
+	turnFlag $player
+	turn=1
 }
 
 function computerChooseOption() {
@@ -57,6 +65,10 @@ function computerChooseOption() {
 		computer="O"
 		player="X"
 	fi
+	computerPosition=$((RANDOM % 9 + 1))
+	choosePosition=$computerPosition
+	turnFlag $computer
+	turn=0
 }
 
 function playFirst() {
@@ -70,4 +82,13 @@ function playFirst() {
 		computerChooseOption
 fi
 }
+
+for (( position=1 ; position<=9 ; position++ ))
+do
+   flag[$position]=0
+done
+for (( position=1 ; position<=9 ; position++ ))
+do
+   board[$position]=$position
+done
 playFirst
