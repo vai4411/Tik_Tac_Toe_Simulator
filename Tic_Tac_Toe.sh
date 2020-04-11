@@ -13,15 +13,16 @@ eight=8
 nine=9
 
 #variable
-position=0
+boardition=0
 toss=0
 choice=0
 player=""
 computer=""
 computerChoice=0
-choosePosition=0
-computerPosition=0
+chooseboardition=0
+computerboardition=0
 turn=0
+value=""
 
 declare -a flag
 
@@ -31,14 +32,14 @@ function printBoard() {
 	echo " ${board[$one]} | ${board[$two]} | ${board[$three]}"
 	echo "-----------"
 	echo " ${board[$four]} | ${board[$five]} | ${board[$six]}"
-   echo "-----------"
+	echo "-----------"
 	echo " ${board[$seven]} | ${board[$eight]} | ${board[$nine]}"
 }
 
 function turnFlag() {
-	board[$choosePosition]=$1
-   printBoard
-   flag[$choosePosition]=1
+	board[$chooseboardition]=$1
+	printBoard
+	flag[$chooseboardition]=1
 }
 
 function playerChooseOption() {
@@ -50,7 +51,7 @@ function playerChooseOption() {
 	else
 		computer="X"
 	fi
-	read -p "Enter the choice:" choosePosition
+	read -p "Enter the choice:" chooseboardition
 	turnFlag $player
 	turn=1
 }
@@ -65,8 +66,8 @@ function computerChooseOption() {
 		computer="O"
 		player="X"
 	fi
-	computerPosition=$((RANDOM % 9 + 1))
-	choosePosition=$computerPosition
+	computerboardition=$((RANDOM % 9 + 1))
+	chooseboardition=$computerboardition
 	turnFlag $computer
 	turn=0
 }
@@ -80,15 +81,35 @@ function playFirst() {
 	else
 		echo "Computer win the toss"
 		computerChooseOption
-fi
+	fi
 }
 
-for (( position=1 ; position<=9 ; position++ ))
+function checkWin() {
+	if ([[ "${board[$one]}" == "$value" ]] && [[ "${board[$two]}" == "$value" ]] && [[ "${board[$three]}" == "$value" ]]) ||
+	   ([[ "${board[$four]}" == "$value" ]] && [[ "${board[$five]}" == "$value" ]] && [[ "${board[$six]}" == "$value" ]]) ||
+	   ([[ "${board[$seven]}" == "$value" ]] && [[ "${board[$eight]}" == "$value" ]] && [[ "${board[$nine]}" == "$value" ]]) ||
+	   ([[ "${board[$one]}" == "$value" ]] && [[ "${board[$four]}" == "$value" ]] && [[ "${board[$seven]}" == "$value" ]]) ||
+	   ([[ "${board[$two]}" == "$value" ]] && [[ "${board[$five]}" == "$value" ]] && [[ "${board[$eight]}" == "$value" ]]) ||
+	   ([[ "${board[$three]}" == "$value" ]] && [[ "${board[$six]}" == "$value" ]] && [[ "${board[$nine]}" == "$value" ]]) ||
+	   ([[ "${board[$one]}" == "$value" ]] && [[ "${board[$five]}" == "$value" ]] && [[ "${board[$nine]}" == "$value" ]]) ||
+	   ([[ "${board[$three]}" == "$value" ]] && [[ "${board[$five]}" == "$value" ]] && [[ "${board[$seven]}" == "$value" ]]) 
+	then
+		if [[ "$value" == "$player" ]]
+		then
+			echo "Player wins..."
+		else
+			echo "Computer wins..."
+		fi
+	fi
+	exit
+}
+
+for (( boardition=1 ; boardition<=9 ; boardition++ ))
 do
-   flag[$position]=0
+   flag[$boardition]=0
 done
-for (( position=1 ; position<=9 ; position++ ))
+for (( boardition=1 ; boardition<=9 ; boardition++ ))
 do
-   board[$position]=$position
+   board[$boardition]=$boardition
 done
 playFirst
