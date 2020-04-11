@@ -3,6 +3,7 @@ echo "Welcome to Tic Tac Toe Game"
 
 #variable
 position=0
+toss=0
 one=1
 two=2
 three=3
@@ -28,3 +29,14 @@ function printBoard() {
 	echo " ${board[$seven]} | ${board[$eight]} | ${board[$nine]}"
 }
 printBoard
+
+function playFirst() {
+	toss=$((RANDOM % 2))
+	if [ $toss -eq $one ]
+	then
+		echo "Player win the toss"
+	else
+		echo "Computer win the toss"
+fi
+}
+playFirst
