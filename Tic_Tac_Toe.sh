@@ -264,6 +264,18 @@ function availablePosition() {
 	elif [ ${flag[$five]} -eq 0 ]
 	then
 		echo "center 5 is available"
+	elif [ ${flag[$two]} -eq 0 ]
+	then
+		echo "side 2 is available"
+	elif [ ${flag[$four]} -eq 0 ]
+	then
+		echo "side 4 is available"
+	elif [ ${flag[$six]} -eq 0 ]
+	then
+		echo "side 6 is available"
+	elif [ ${flag[$eight]} -eq 0 ]
+	then
+		echo "side 8 is available"
 	fi 
 }
 
