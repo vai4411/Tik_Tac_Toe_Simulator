@@ -22,12 +22,15 @@ computerChoice=0
 chooseboardition=0
 computerboardition=0
 turn=0
+turnCheck=0
 value=""
+count=0
 
 declare -a flag
 
 declare -a board
 
+#function for print board
 function printBoard() {
 	echo " ${board[$one]} | ${board[$two]} | ${board[$three]}"
 	echo "-----------"
@@ -36,10 +39,84 @@ function printBoard() {
 	echo " ${board[$seven]} | ${board[$eight]} | ${board[$nine]}"
 }
 
+#change position flag for showing position is already occupied
 function turnFlag() {
 	board[$chooseboardition]=$1
 	printBoard
 	flag[$chooseboardition]=1
+}
+
+function takePlayerInput() {
+	read -p "Enter the choice:" chooseboardition
+}
+
+function playerMove() {
+	turnFlag $player
+	turn=1
+}
+
+function takeComputerInput() {
+	computerboardition=$((RANDOM % 9 + 1))
+	chooseboardition=$computerboardition
+}
+
+function computerMove() {
+	turnFlag $computer
+	turn=0
+}
+
+#checking every moves of player and computer
+function checkMove() {
+	turnCheck=$turn
+	if [ $turnCheck -eq 0 ]
+	then
+		takePlayerInput
+	else
+		takeComputerInput
+	fi
+	if [ ${flag[$chooseboardition]} -eq 0 ]
+	then
+		if [ $turnCheck -eq 0 ]
+		then
+			playerMove
+		else
+			computerMove
+		fi
+	else
+		while [ ${flag[$chooseboardition]} -ne 0 ]
+		do
+			if [ $turnCheck -eq 0 ]
+			then
+				takePlayerInput
+			else
+				takeComputerInput
+			fi
+		done 
+				if [ $turnCheck -eq 0 ]
+				then 
+					playerMove
+				else
+					computerMove
+				fi
+	fi
+}
+
+#play player and computer moves
+function boardMoves() {
+	playFirst
+	while [ $count -lt $nine ]
+	do
+		if [ $turn -eq 0 ]
+		then
+			checkMove
+			checkWin $player
+		else
+			checkMove
+			echo -e "Computer choose $chooseboardition\n"
+		fi
+		count=$(($count + 1))
+		checkWin $computer
+	done
 }
 
 function playerChooseOption() {
@@ -51,9 +128,8 @@ function playerChooseOption() {
 	else
 		computer="X"
 	fi
-	read -p "Enter the choice:" chooseboardition
-	turnFlag $player
-	turn=1
+	takePlayerInput
+	playerMove
 }
 
 function computerChooseOption() {
@@ -66,10 +142,8 @@ function computerChooseOption() {
 		computer="O"
 		player="X"
 	fi
-	computerboardition=$((RANDOM % 9 + 1))
-	chooseboardition=$computerboardition
-	turnFlag $computer
-	turn=0
+	takeComputerInput
+	computerMove
 }
 
 function playFirst() {
@@ -85,6 +159,7 @@ function playFirst() {
 }
 
 function checkWin() {
+	value=$1
 	if ([[ "${board[$one]}" == "$value" ]] && [[ "${board[$two]}" == "$value" ]] && [[ "${board[$three]}" == "$value" ]]) ||
 	   ([[ "${board[$four]}" == "$value" ]] && [[ "${board[$five]}" == "$value" ]] && [[ "${board[$six]}" == "$value" ]]) ||
 	   ([[ "${board[$seven]}" == "$value" ]] && [[ "${board[$eight]}" == "$value" ]] && [[ "${board[$nine]}" == "$value" ]]) ||
@@ -97,19 +172,22 @@ function checkWin() {
 		if [[ "$value" == "$player" ]]
 		then
 			echo "Player wins..."
+			exit
 		else
 			echo "Computer wins..."
+			exit
 		fi
 	fi
-	exit
 }
 
+#set all positions are unoccupied
 for (( boardition=1 ; boardition<=9 ; boardition++ ))
 do
    flag[$boardition]=0
 done
+#set all the position number
 for (( boardition=1 ; boardition<=9 ; boardition++ ))
 do
    board[$boardition]=$boardition
 done
-playFirst
+boardMoves
