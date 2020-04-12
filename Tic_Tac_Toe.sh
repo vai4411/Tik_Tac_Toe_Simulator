@@ -261,6 +261,9 @@ function availablePosition() {
 	elif [ ${flag[$nine]} -eq 0 ]
 	then
 		echo "corner 9 is available"
+	elif [ ${flag[$five]} -eq 0 ]
+	then
+		echo "center 5 is available"
 	fi 
 }
 
