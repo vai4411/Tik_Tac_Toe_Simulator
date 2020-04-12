@@ -25,6 +25,8 @@ turn=0
 turnCheck=0
 value=""
 count=0
+win=0
+winMove=0
 
 declare -a flag
 
@@ -92,12 +94,12 @@ function checkMove() {
 				takeComputerInput
 			fi
 		done 
-				if [ $turnCheck -eq 0 ]
-				then 
-					playerMove
-				else
-					computerMove
-				fi
+		if [ $turnCheck -eq 0 ]
+		then 
+			playerMove
+		else
+			computerMove
+		fi
 	fi
 }
 
@@ -116,6 +118,10 @@ function boardMoves() {
 		fi
 		count=$(($count + 1))
 		checkWin $computer
+		if [ $count -gt $two ]
+		then
+			winningMove
+		fi
 	done
 }
 
@@ -158,18 +164,47 @@ function playFirst() {
 	fi
 }
 
+function winCondition() {
+	if ([[ "${board[$one]}" == "$value" ]] && [[ "${board[$two]}" == "$value" ]] && [[ "${board[$three]}" == "$value" ]]) ||
+		([[ "${board[$four]}" == "$value" ]] && [[ "${board[$five]}" == "$value" ]] && [[ "${board[$six]}" == "$value" ]]) ||
+		([[ "${board[$seven]}" == "$value" ]] && [[ "${board[$eight]}" == "$value" ]] && [[ "${board[$nine]}" == "$value" ]]) ||
+		([[ "${board[$one]}" == "$value" ]] && [[ "${board[$four]}" == "$value" ]] && [[ "${board[$seven]}" == "$value" ]]) ||
+		([[ "${board[$two]}" == "$value" ]] && [[ "${board[$five]}" == "$value" ]] && [[ "${board[$eight]}" == "$value" ]]) ||
+		([[ "${board[$three]}" == "$value" ]] && [[ "${board[$six]}" == "$value" ]] && [[ "${board[$nine]}" == "$value" ]]) ||
+		([[ "${board[$one]}" == "$value" ]] && [[ "${board[$five]}" == "$value" ]] && [[ "${board[$nine]}" == "$value" ]]) ||
+		([[ "${board[$three]}" == "$value" ]] && [[ "${board[$five]}" == "$value" ]] && [[ "${board[$seven]}" == "$value" ]]) 
+	then
+		win=1
+	fi
+}
+
+#display winning moves for player
+function winningMove() {
+	for (( boardition=1 ; boardition<=9 ; boardition++ ))
+	do
+		if [ ${flag[$boardition]} -eq 0 ]
+		then
+		board[$boardition]=$player
+		value=$player
+		winCondition
+		if [ $win -eq 1 ]
+		then
+			win=0
+			echo "Choose $boardition"
+			break
+		fi
+		board[$boardition]=$boardition
+		fi
+	done
+}
+
 function checkWin() {
 	value=$1
-	if ([[ "${board[$one]}" == "$value" ]] && [[ "${board[$two]}" == "$value" ]] && [[ "${board[$three]}" == "$value" ]]) ||
-	   ([[ "${board[$four]}" == "$value" ]] && [[ "${board[$five]}" == "$value" ]] && [[ "${board[$six]}" == "$value" ]]) ||
-	   ([[ "${board[$seven]}" == "$value" ]] && [[ "${board[$eight]}" == "$value" ]] && [[ "${board[$nine]}" == "$value" ]]) ||
-	   ([[ "${board[$one]}" == "$value" ]] && [[ "${board[$four]}" == "$value" ]] && [[ "${board[$seven]}" == "$value" ]]) ||
-	   ([[ "${board[$two]}" == "$value" ]] && [[ "${board[$five]}" == "$value" ]] && [[ "${board[$eight]}" == "$value" ]]) ||
-	   ([[ "${board[$three]}" == "$value" ]] && [[ "${board[$six]}" == "$value" ]] && [[ "${board[$nine]}" == "$value" ]]) ||
-	   ([[ "${board[$one]}" == "$value" ]] && [[ "${board[$five]}" == "$value" ]] && [[ "${board[$nine]}" == "$value" ]]) ||
-	   ([[ "${board[$three]}" == "$value" ]] && [[ "${board[$five]}" == "$value" ]] && [[ "${board[$seven]}" == "$value" ]]) 
+	win=0
+	winCondition
+	if [ $win -eq 1 ]
 	then
-		if [[ "$value" == "$player" ]]
+		if [[ "$value" == "$player" ]] 
 		then
 			echo "Player wins..."
 			exit
