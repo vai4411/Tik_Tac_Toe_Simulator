@@ -48,6 +48,7 @@ function turnFlag() {
 	flag[$chooseBoardPosition]=1
 }
 
+#taking user input
 function takePlayerInput() {
 	read -p "Enter the choice:" chooseBoardPosition
 }
@@ -57,6 +58,7 @@ function playerMove() {
 	turn=1
 }
 
+#using random function generate computer input
 function takeComputerInput() {
 	computerBoardPosition=$((RANDOM % 9 + 1))
 	chooseBoardPosition=$computerBoardPosition
@@ -106,7 +108,7 @@ function checkMove() {
 #play player and computer moves
 function boardMoves() {
 	playFirst
-	while [ $count -lt $nine ]
+	while [ $count -lt $eight ]
 	do
 		if [ $turn -eq 0 ]
 		then
@@ -123,7 +125,12 @@ function boardMoves() {
 			winningMove
 			blockMove
 		fi
+		if [ $count -gt $six ]
+		then
+			availablePosition
+		fi
 	done
+	echo "Draw Game..."
 }
 
 function playerChooseOption() {
@@ -154,6 +161,7 @@ function computerChooseOption() {
 	echo -e "Computer choose $chooseBoardPosition\n"
 }
 
+#toss for check who plays first
 function playFirst() {
 	toss=$((RANDOM % 2))
 	if [ $toss -eq $one ]
@@ -221,6 +229,7 @@ function blockMove() {
 	done
 }
 
+#check player or computer win
 function checkWin() {
 	value=$1
 	win=0
@@ -236,6 +245,23 @@ function checkWin() {
 			exit
 		fi
 	fi
+}
+
+#display available corner
+function availablePosition() {
+	if [ ${flag[$one]} -eq 0 ]
+	then
+		echo "corner 1 is available"
+	elif [ ${flag[$three]} -eq 0 ]
+	then
+		echo "corner 3 is available"
+	elif [ ${flag[$seven]} -eq 0 ]
+	then
+		echo "corner 7 is available"
+	elif [ ${flag[$nine]} -eq 0 ]
+	then
+		echo "corner 9 is available"
+	fi 
 }
 
 #set all positions are unoccupied
