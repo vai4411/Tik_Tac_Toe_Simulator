@@ -69,70 +69,7 @@ function computerMove() {
 	turn=0
 }
 
-#checking every moves of player and computer
-function checkMove() {
-	turnCheck=$turn
-	if [ $turnCheck -eq 0 ]
-	then
-		takePlayerInput
-	else
-		takeComputerInput
-	fi
-	if [ ${flag[$chooseBoardPosition]} -eq 0 ]
-	then
-		if [ $turnCheck -eq 0 ]
-		then
-			playerMove
-		else
-			computerMove
-		fi
-	else
-		while [ ${flag[$chooseBoardPosition]} -ne 0 ]
-		do
-			if [ $turnCheck -eq 0 ]
-			then
-				takePlayerInput
-			else
-				takeComputerInput
-			fi
-		done 
-		if [ $turnCheck -eq 0 ]
-		then 
-			playerMove
-		else
-			computerMove
-		fi
-	fi
-}
-
-#play player and computer moves
-function boardMoves() {
-	playFirst
-	while [ $count -lt $eight ]
-	do
-		if [ $turn -eq 0 ]
-		then
-			checkMove
-			checkWin $player
-		else
-			checkMove
-			echo -e "Computer choose $chooseBoardPosition\n"
-		fi
-		count=$(($count + 1))
-		checkWin $computer
-		if [ $count -gt $one ]
-		then
-			winningMove
-			blockMove
-		fi
-		if [ $count -gt $six ]
-		then
-			availablePosition
-		fi
-	done
-	echo "Draw Game..."
-}
-
+#player choose option
 function playerChooseOption() {
 	read -p "Enter letter X or O:" choice
 	player=$choice
@@ -146,6 +83,7 @@ function playerChooseOption() {
 	playerMove
 }
 
+#computer choose option
 function computerChooseOption() {
 	computerChoice=$((RANDOM % 2))
 	if [ $computerChoice -eq 1 ]
@@ -174,6 +112,7 @@ function playFirst() {
 	fi
 }
 
+#all winning conditions
 function winCondition() {
 	if ([[ "${board[$one]}" == "$value" ]] && [[ "${board[$two]}" == "$value" ]] && [[ "${board[$three]}" == "$value" ]]) ||
 		([[ "${board[$four]}" == "$value" ]] && [[ "${board[$five]}" == "$value" ]] && [[ "${board[$six]}" == "$value" ]]) ||
@@ -277,6 +216,70 @@ function availablePosition() {
 	then
 		echo "side 8 is available"
 	fi 
+}
+
+#checking every moves of player and computer
+function checkMove() {
+	turnCheck=$turn
+	if [ $turnCheck -eq 0 ]
+	then
+		takePlayerInput
+	else
+		takeComputerInput
+	fi
+	if [ ${flag[$chooseBoardPosition]} -eq 0 ]
+	then
+		if [ $turnCheck -eq 0 ]
+		then
+			playerMove
+		else
+			computerMove
+		fi
+	else
+		while [ ${flag[$chooseBoardPosition]} -ne 0 ]
+		do
+			if [ $turnCheck -eq 0 ]
+			then
+				takePlayerInput
+			else
+				takeComputerInput
+			fi
+		done 
+		if [ $turnCheck -eq 0 ]
+		then 
+			playerMove
+		else
+			computerMove
+		fi
+	fi
+}
+
+#play player and computer moves
+function boardMoves() {
+	playFirst
+	while [ $count -lt $eight ]
+	do
+		if [ $turn -eq 0 ]
+		then
+			checkMove
+			checkWin $player
+		else
+			checkMove
+			echo -e "Computer choose $chooseBoardPosition\n"
+		fi
+		count=$(($count + 1))
+		checkWin $computer
+		if [ $count -gt $one ]
+		then
+			winningMove
+			blockMove
+		fi
+		if [ $count -gt $six ]
+		then
+			availablePosition
+		fi
+	done
+	echo "Draw Game..."
 }
 
 #set all positions are unoccupied
