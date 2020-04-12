@@ -19,8 +19,8 @@ choice=0
 player=""
 computer=""
 computerChoice=0
-chooseboardition=0
-computerboardition=0
+chooseBoardPosition=0
+computerBoardPosition=0
 turn=0
 turnCheck=0
 value=""
@@ -38,18 +38,18 @@ function printBoard() {
 	echo "-----------"
 	echo " ${board[$four]} | ${board[$five]} | ${board[$six]}"
 	echo "-----------"
-	echo " ${board[$seven]} | ${board[$eight]} | ${board[$nine]}"
+	echo -e " ${board[$seven]} | ${board[$eight]} | ${board[$nine]}\n"
 }
 
 #change position flag for showing position is already occupied
 function turnFlag() {
-	board[$chooseboardition]=$1
+	board[$chooseBoardPosition]=$1
 	printBoard
-	flag[$chooseboardition]=1
+	flag[$chooseBoardPosition]=1
 }
 
 function takePlayerInput() {
-	read -p "Enter the choice:" chooseboardition
+	read -p "Enter the choice:" chooseBoardPosition
 }
 
 function playerMove() {
@@ -58,8 +58,8 @@ function playerMove() {
 }
 
 function takeComputerInput() {
-	computerboardition=$((RANDOM % 9 + 1))
-	chooseboardition=$computerboardition
+	computerBoardPosition=$((RANDOM % 9 + 1))
+	chooseBoardPosition=$computerBoardPosition
 }
 
 function computerMove() {
@@ -76,7 +76,7 @@ function checkMove() {
 	else
 		takeComputerInput
 	fi
-	if [ ${flag[$chooseboardition]} -eq 0 ]
+	if [ ${flag[$chooseBoardPosition]} -eq 0 ]
 	then
 		if [ $turnCheck -eq 0 ]
 		then
@@ -85,7 +85,7 @@ function checkMove() {
 			computerMove
 		fi
 	else
-		while [ ${flag[$chooseboardition]} -ne 0 ]
+		while [ ${flag[$chooseBoardPosition]} -ne 0 ]
 		do
 			if [ $turnCheck -eq 0 ]
 			then
@@ -114,13 +114,14 @@ function boardMoves() {
 			checkWin $player
 		else
 			checkMove
-			echo -e "Computer choose $chooseboardition\n"
+			echo -e "Computer choose $chooseBoardPosition\n"
 		fi
 		count=$(($count + 1))
 		checkWin $computer
-		if [ $count -gt $two ]
+		if [ $count -gt $one ]
 		then
 			winningMove
+			blockMove
 		fi
 	done
 }
@@ -150,6 +151,7 @@ function computerChooseOption() {
 	fi
 	takeComputerInput
 	computerMove
+	echo -e "Computer choose $chooseBoardPosition\n"
 }
 
 function playFirst() {
@@ -184,16 +186,37 @@ function winningMove() {
 	do
 		if [ ${flag[$boardition]} -eq 0 ]
 		then
-		board[$boardition]=$player
-		value=$player
-		winCondition
-		if [ $win -eq 1 ]
-		then
-			win=0
-			echo "Choose $boardition"
-			break
+			board[$boardition]=$player
+			value=$player
+			winCondition
+			if [ $win -eq 1 ]
+			then
+				win=0
+				echo "Choose $boardition for win"
+				break
+			fi
+			board[$boardition]=$boardition
 		fi
-		board[$boardition]=$boardition
+	done
+}
+
+#display computer win block moves
+function blockMove() {
+	for (( boardition=1 ; boardition<=9 ; boardition++ ))
+	do
+		if [ ${flag[$boardition]} -eq 0 ]
+		then
+			board[$boardition]=$computer
+			value=$computer
+			winCondition
+			if [ $win -eq 1 ]
+			then
+				board[$boardition]=$boardition
+				win=0
+				echo "Choose $boardition for block"
+				break
+			fi
+			board[$boardition]=$boardition
 		fi
 	done
 }
