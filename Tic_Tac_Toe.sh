@@ -112,16 +112,15 @@ function playFirst() {
 	fi
 }
 
+function testCondition() {
+	[[ "${board[$1]}" == "$value" ]] && [[ "${board[$2]}" == "$value" ]] && [[ "${board[$3]}" == "$value" ]]
+}
+
 #all winning conditions
 function winCondition() {
-	if ([[ "${board[$one]}" == "$value" ]] && [[ "${board[$two]}" == "$value" ]] && [[ "${board[$three]}" == "$value" ]]) ||
-		([[ "${board[$four]}" == "$value" ]] && [[ "${board[$five]}" == "$value" ]] && [[ "${board[$six]}" == "$value" ]]) ||
-		([[ "${board[$seven]}" == "$value" ]] && [[ "${board[$eight]}" == "$value" ]] && [[ "${board[$nine]}" == "$value" ]]) ||
-		([[ "${board[$one]}" == "$value" ]] && [[ "${board[$four]}" == "$value" ]] && [[ "${board[$seven]}" == "$value" ]]) ||
-		([[ "${board[$two]}" == "$value" ]] && [[ "${board[$five]}" == "$value" ]] && [[ "${board[$eight]}" == "$value" ]]) ||
-		([[ "${board[$three]}" == "$value" ]] && [[ "${board[$six]}" == "$value" ]] && [[ "${board[$nine]}" == "$value" ]]) ||
-		([[ "${board[$one]}" == "$value" ]] && [[ "${board[$five]}" == "$value" ]] && [[ "${board[$nine]}" == "$value" ]]) ||
-		([[ "${board[$three]}" == "$value" ]] && [[ "${board[$five]}" == "$value" ]] && [[ "${board[$seven]}" == "$value" ]]) 
+	if ( testCondition $one $two $three ) || ( testCondition $four $five $six ) || ( testCondition $seven $eight $nine ) || 
+		( testCondition $one $four $seven ) || ( testCondition $two $five $eight ) || ( testCondition $three $six $nine ) ||
+		( testCondition $one $five $nine ) || ( testCondition $three $five $seven )
 	then
 		win=1
 	fi
@@ -241,7 +240,15 @@ function checkMove() {
 }
 
 #play player and computer moves
-function boardMoves() {
+function main() {
+	for (( boardPosition=1 ; boardPosition<=9 ; boardPosition++ ))
+	do
+   	available[$boardPosition]=0
+	done
+	for (( boardPosition=1 ; boardPosition<=9 ; boardPosition++ ))
+	do
+   	board[$boardPosition]=$boardPosition
+	done
 	playFirst
 	while [ $count -lt $eight ]
 	do
@@ -268,14 +275,5 @@ function boardMoves() {
 	echo "Draw Game..."
 }
 
-#set all positions are unoccupied
-for (( boardPosition=1 ; boardPosition<=9 ; boardPosition++ ))
-do
-   available[$boardPosition]=0
-done
-#set all the position number
-for (( boardPosition=1 ; boardPosition<=9 ; boardPosition++ ))
-do
-   board[$boardPosition]=$boardPosition
-done
-boardMoves
+#calling main function
+main
