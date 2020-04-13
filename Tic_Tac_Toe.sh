@@ -13,7 +13,7 @@ eight=8
 nine=9
 
 #variable
-boardition=0
+boardPosition=0
 toss=0
 choice=0
 player=""
@@ -28,7 +28,7 @@ count=0
 win=0
 winMove=0
 
-declare -a flag
+declare -a available
 
 declare -a board
 
@@ -41,11 +41,11 @@ function printBoard() {
 	echo -e " ${board[$seven]} | ${board[$eight]} | ${board[$nine]}\n"
 }
 
-#change position flag for showing position is already occupied
-function turnFlag() {
+#change position available for showing position is already occupied
+function turnavailable() {
 	board[$chooseBoardPosition]=$1
 	printBoard
-	flag[$chooseBoardPosition]=1
+	available[$chooseBoardPosition]=1
 }
 
 #taking user input
@@ -54,7 +54,7 @@ function takePlayerInput() {
 }
 
 function playerMove() {
-	turnFlag $player
+	turnavailable $player
 	turn=1
 }
 
@@ -65,7 +65,7 @@ function takeComputerInput() {
 }
 
 function computerMove() {
-	turnFlag $computer
+	turnavailable $computer
 	turn=0
 }
 
@@ -129,41 +129,41 @@ function winCondition() {
 
 #display winning moves for player
 function winningMove() {
-	for (( boardition=1 ; boardition<=9 ; boardition++ ))
+	for (( boardPosition=1 ; boardPosition<=9 ; boardPosition++ ))
 	do
-		if [ ${flag[$boardition]} -eq 0 ]
+		if [ ${available[$boardPosition]} -eq 0 ]
 		then
-			board[$boardition]=$player
+			board[$boardPosition]=$player
 			value=$player
 			winCondition
 			if [ $win -eq 1 ]
 			then
 				win=0
-				echo "Choose $boardition for win"
+				echo "Choose $boardPosition for win"
 				break
 			fi
-			board[$boardition]=$boardition
+			board[$boardPosition]=$boardPosition
 		fi
 	done
 }
 
 #display computer win block moves
 function blockMove() {
-	for (( boardition=1 ; boardition<=9 ; boardition++ ))
+	for (( boardPosition=1 ; boardPosition<=9 ; boardPosition++ ))
 	do
-		if [ ${flag[$boardition]} -eq 0 ]
+		if [ ${available[$boardPosition]} -eq 0 ]
 		then
-			board[$boardition]=$computer
+			board[$boardPosition]=$computer
 			value=$computer
 			winCondition
 			if [ $win -eq 1 ]
 			then
-				board[$boardition]=$boardition
+				board[$boardPosition]=$boardPosition
 				win=0
-				echo "Choose $boardition for block"
+				echo "Choose $boardPosition for block"
 				break
 			fi
-			board[$boardition]=$boardition
+			board[$boardPosition]=$boardPosition
 		fi
 	done
 }
@@ -188,69 +188,55 @@ function checkWin() {
 
 #display available corner
 function availablePosition() {
-	if [ ${flag[$one]} -eq 0 ]
-	then
-		echo "corner 1 is available"
-	elif [ ${flag[$three]} -eq 0 ]
-	then
-		echo "corner 3 is available"
-	elif [ ${flag[$seven]} -eq 0 ]
-	then
-		echo "corner 7 is available"
-	elif [ ${flag[$nine]} -eq 0 ]
-	then
-		echo "corner 9 is available"
-	elif [ ${flag[$five]} -eq 0 ]
-	then
-		echo "center 5 is available"
-	elif [ ${flag[$two]} -eq 0 ]
-	then
-		echo "side 2 is available"
-	elif [ ${flag[$four]} -eq 0 ]
-	then
-		echo "side 4 is available"
-	elif [ ${flag[$six]} -eq 0 ]
-	then
-		echo "side 6 is available"
-	elif [ ${flag[$eight]} -eq 0 ]
-	then
-		echo "side 8 is available"
-	fi 
+	for (( boardPosition=1 ; boardPosition<=9 ; boardPosition++ ))
+	do
+		if [ ${available[$boardPosition]} -eq 0 ]
+		then
+			if [ ${available[$one]} -eq 0 ] || [ ${available[$three]} -eq 0 ] || [ ${available[$seven]} -eq 0 ] || [ ${available[$nine]} -eq 0 ]
+			then
+				echo "corner $boardPosition is available"
+			elif [ ${available[$five]} -eq 0 ]
+			then
+				echo "center 5 is available"
+			elif [ ${available[$two]} -eq 0 ] || [ ${available[$four]} -eq 0 ] || [ ${available[$six]} -eq 0 ] || [ ${available[$eight]} -eq 0 ]
+			then
+				echo "side $boardPosition in available"
+			fi
+		fi
+	done 
 }
 
-#checking every moves of player and computer
-function checkMove() {
-	turnCheck=$turn
+function nextInput() {
 	if [ $turnCheck -eq 0 ]
 	then
 		takePlayerInput
 	else
 		takeComputerInput
 	fi
-	if [ ${flag[$chooseBoardPosition]} -eq 0 ]
+}
+
+function nextMove() {
+	if [ $turnCheck -eq 0 ]
 	then
-		if [ $turnCheck -eq 0 ]
-		then
-			playerMove
-		else
-			computerMove
-		fi
+		playerMove
 	else
-		while [ ${flag[$chooseBoardPosition]} -ne 0 ]
+		computerMove
+	fi
+}
+
+#checking every moves of player and computer
+function checkMove() {
+	turnCheck=$turn
+	nextInput
+	if [ ${available[$chooseBoardPosition]} -eq 0 ]
+	then
+		nextMove
+	else
+		while [ ${available[$chooseBoardPosition]} -ne 0 ]
 		do
-			if [ $turnCheck -eq 0 ]
-			then
-				takePlayerInput
-			else
-				takeComputerInput
-			fi
+			nextInput
 		done 
-		if [ $turnCheck -eq 0 ]
-		then 
-			playerMove
-		else
-			computerMove
-		fi
+		nextMove
 	fi
 }
 
@@ -283,13 +269,13 @@ function boardMoves() {
 }
 
 #set all positions are unoccupied
-for (( boardition=1 ; boardition<=9 ; boardition++ ))
+for (( boardPosition=1 ; boardPosition<=9 ; boardPosition++ ))
 do
-   flag[$boardition]=0
+   available[$boardPosition]=0
 done
 #set all the position number
-for (( boardition=1 ; boardition<=9 ; boardition++ ))
+for (( boardPosition=1 ; boardPosition<=9 ; boardPosition++ ))
 do
-   board[$boardition]=$boardition
+   board[$boardPosition]=$boardPosition
 done
 boardMoves
