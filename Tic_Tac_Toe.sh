@@ -243,11 +243,11 @@ function checkMove() {
 function main() {
 	for (( boardPosition=1 ; boardPosition<=9 ; boardPosition++ ))
 	do
-   	available[$boardPosition]=0
+		available[$boardPosition]=0
 	done
 	for (( boardPosition=1 ; boardPosition<=9 ; boardPosition++ ))
 	do
-   	board[$boardPosition]=$boardPosition
+		board[$boardPosition]=$boardPosition
 	done
 	playFirst
 	while [ $count -lt $eight ]
