@@ -34,11 +34,12 @@ declare -a board
 
 #function for print board
 function printBoard() {
-	echo " ${board[$one]} | ${board[$two]} | ${board[$three]}"
-	echo "-----------"
-	echo " ${board[$four]} | ${board[$five]} | ${board[$six]}"
-	echo "-----------"
-	echo -e " ${board[$seven]} | ${board[$eight]} | ${board[$nine]}\n"
+	position=0
+	for (( boardPosition=1 ; boardPosition<=3 ; boardPosition++ ))
+	do
+		echo -e "---------------\n| ${board[$(($one + $position))]} || ${board[$(($two + $position))]} || ${board[$(($three + $position))]} |\n---------------"
+		position=$(($position + $three))
+	done
 }
 
 #change position available for showing position is already occupied
