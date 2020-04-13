@@ -262,11 +262,8 @@ function main() {
 		fi
 		count=$(($count + 1))
 		checkWin $computer
-		if [ $count -gt $one ]
-		then
-			winningMove
-			blockMove
-		fi
+		winningMove
+		blockMove
 		if [ $count -gt $six ]
 		then
 			availablePosition
