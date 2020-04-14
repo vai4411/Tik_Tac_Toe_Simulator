@@ -27,6 +27,8 @@ value=""
 count=0
 win=0
 winMove=0
+corner=0
+side=0
 
 declare -a available
 
@@ -52,6 +54,11 @@ function turnavailable() {
 #taking user input
 function takePlayerInput() {
 	read -p "Enter the choice:" chooseBoardPosition
+	while [ $chooseBoardPosition -gt $nine ]
+	do
+		echo "Invalid choice you need to enter position between 1-9..."
+		read -p "Enter the choice:" chooseBoardPosition
+	done
 }
 
 function playerMove() {
@@ -70,16 +77,26 @@ function computerMove() {
 	turn=0
 }
 
-#player choose option
-function playerChooseOption() {
+function playersChoice() {
 	read -p "Enter letter X or O:" choice
 	player=$choice
 	if [[ $choice == "X" ]]
 	then
 		computer="O"
-	else
+	elif [[ $choice == "O" ]]
+	then
 		computer="X"
+	else
+		echo "You Enter Invalid Choice Enter Letter X or O..."
 	fi
+}
+
+#player choose option
+function playerChooseOption() {
+	while [[ $choice != "X" ]] && [[ $choice != "O" ]]
+	do
+		playersChoice
+	done
 	takePlayerInput
 	playerMove
 }
@@ -140,6 +157,7 @@ function winningMove() {
 			then
 				win=0
 				echo "Choose $boardPosition for win"
+				board[$boardPosition]=$boardPosition
 				break
 			fi
 			board[$boardPosition]=$boardPosition
@@ -187,23 +205,51 @@ function checkWin() {
 }
 
 #display available corner
-function availablePosition() {
-	for (( boardPosition=1 ; boardPosition<=9 ; boardPosition++ ))
-	do
-		if [ ${available[$boardPosition]} -eq 0 ]
-		then
-			if [ ${available[$one]} -eq 0 ] || [ ${available[$three]} -eq 0 ] || [ ${available[$seven]} -eq 0 ] || [ ${available[$nine]} -eq 0 ]
-			then
-				echo "corner $boardPosition is available"
-			elif [ ${available[$five]} -eq 0 ]
-			then
-				echo "center 5 is available"
-			elif [ ${available[$two]} -eq 0 ] || [ ${available[$four]} -eq 0 ] || [ ${available[$six]} -eq 0 ] || [ ${available[$eight]} -eq 0 ]
-			then
-				echo "side $boardPosition in available"
-			fi
-		fi
-	done 
+function availableCorner() {
+	if [ ${available[$one]} -eq 0 ]
+	then
+		corner=$one
+	elif [ ${available[$three]} -eq 0 ]
+	then
+		corner=$three
+	elif [ ${available[$seven]} -eq 0 ]
+	then
+		corner=$seven
+	elif [ ${available[$nine]} -eq 0 ]
+	then
+		corner=$nine
+	fi
+	if [ $corner -ne 0 ]
+	then
+		echo "corner $corner is available"
+	fi
+}
+
+function availableCenter() {
+	if [ ${available[$five]} -eq 0 ]
+	then
+		echo "center 5 is available"
+	fi
+}
+
+function availableSide() {
+	if [ ${available[$two]} -eq 0 ]
+	then
+		side=$two
+	elif [ ${available[$four]} -eq 0 ]
+	then
+		side=$four
+	elif [ ${available[$six]} -eq 0 ]
+	then
+		side=$six
+	elif [ ${available[$eight]} -eq 0 ]
+	then
+		side=$eight
+	fi
+	if [ $side -ne 0 ]
+	then
+		echo "side $side is available"
+	fi
 }
 
 function nextInput() {
@@ -250,6 +296,7 @@ function main() {
 	do
 		board[$boardPosition]=$boardPosition
 	done
+	printBoard
 	playFirst
 	while [ $count -lt $eight ]
 	do
@@ -265,9 +312,11 @@ function main() {
 		checkWin $computer
 		winningMove
 		blockMove
-		if [ $count -gt $six ]
+		if [ $count -gt $five ]
 		then
-			availablePosition
+			availableCorner
+			availableCenter
+			availableSide
 		fi
 	done
 	echo "Draw Game..."
